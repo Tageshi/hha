@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bin.user.dao.UserInfoDao">
+    <insert id="register">
+        insert into user_info(phone_number,username,password,sex,head_img,email,age_group)
+        values(#{phoneNumber},#{username},#{password},#{sex},#{headImg},#{email},#{ageGroup})
+    </insert>
+    <update id="updateScore">
+        update user_info set score=score+1 where phone_number=#{phoneNumber}
+    </update>
+    <select id="getUserInfoByPhoneNumber" resultType="com.bin.user.pojo.PO.UserInfo">
+        select * from user_info where phone_number=#{phoneNumber} and is_deleted=0
+    </select>
+    <select id="getAgeGroupByUserId" resultType="java.lang.String">
+        select age_group from user_info where user_id=#{userId}
+    </select>
+</mapper>

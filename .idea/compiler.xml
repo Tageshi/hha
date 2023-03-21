@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="hha-user-interface" />
+        <module name="hha-user-entity" />
+        <module name="hha-user-dao" />
+        <module name="hha-user-consumer" />
+        <module name="hha-user-implemention" />
+        <module name="hha-common-web" />
+        <module name="hha-common-core" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="hha-oldster-consumer" target="1.7" />
+      <module name="hha-oldster-interface" target="1.7" />
+      <module name="hha-oldster-provider" target="1.8" />
+      <module name="hha-yongster-consumer" target="1.7" />
+      <module name="hha-yongster-interface" target="1.7" />
+      <module name="hha-yongster-provider" target="1.7" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="hha" options="-parameters" />
+      <module name="hha-common" options="-parameters" />
+      <module name="hha-common-core" options="-parameters" />
+      <module name="hha-common-web" options="-parameters" />
+      <module name="hha-oldster-consumer" options="-parameters" />
+      <module name="hha-oldster-interface" options="-parameters" />
+      <module name="hha-oldster-provider" options="-parameters" />
+      <module name="hha-user-consumer" options="-parameters" />
+      <module name="hha-user-dao" options="-parameters" />
+      <module name="hha-user-entity" options="-parameters" />
+      <module name="hha-user-implemention" options="-parameters" />
+      <module name="hha-user-interface" options="-parameters" />
+      <module name="hha-user-provider" options="-parameters" />
+      <module name="hha-yongster-consumer" options="-parameters" />
+      <module name="hha-yongster-interface" options="-parameters" />
+      <module name="hha-yongster-provider" options="-parameters" />
+    </option>
+  </component>
+</project>
