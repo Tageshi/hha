@@ -1,5 +1,7 @@
 package com.bin.common.core.context;
 
+import cn.dev33.satoken.stp.StpUtil;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +50,7 @@ public class BaseContextHandler {
     }
 
     public static Long getUserID() {
-        Object value = get(CONTEXT_KEY_USER_ID);
+        Object value = StpUtil.getLoginIdAsLong();
         return returnObjectValue(value);
     }
 

@@ -1,5 +1,6 @@
 package com.bin.user.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.bin.common.core.api.AppHttpCodeEnum;
 import com.bin.common.core.api.ResponseResult;
@@ -30,8 +31,7 @@ public class YoungsterController extends BaseController {
      **/
     @PostMapping("/addOutcomeRecord")
     public ResponseResult addOutcomeRecord(@Validated @RequestBody AddOutcomeRecordDTO addOutcomeRecordDTO){
-        if(outcomeService.addOutcomeRecord(addOutcomeRecordDTO,getUserId())){
-            System.out.println(getUserId());
+        if(outcomeService.addOutcomeRecord(addOutcomeRecordDTO, getUserId())){
             return ResponseResult.okResult(AppHttpCodeEnum.SUCCESS);
         }
         return ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
