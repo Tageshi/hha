@@ -11,8 +11,8 @@
         insert into user_type(user_id,type_id)values (#{userId},#{typeId})
     </insert>
     <insert id="addRoutineDetail">
-        insert into routine_detail(routine_detail_name,routine_detail_type_id,routine_detail_cost,routine_id)
-        values (#{detailName},#{detailTypeId},#{detailCost},#{routineId})
+        insert into routine_detail(routine_detail_name,routine_detail_type_id,routine_detail_type_name,routine_detail_type_icon,routine_detail_cost,routine_id)
+        values (#{detailName},#{detailTypeId},#{detailTypeName},#{detailTypeIcon},#{detailCost},#{routineId})
     </insert>
     <update id="updateOutcomeRecord">
         update outcome_info set type_id=#{typeId},outcome_name=#{outcomeName},outcome=#{outcome},date=#{date} where outcome_id=#{outcomeId}
