@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bin.user.pojo.PO.OutcomeInfo;
 import com.bin.user.pojo.PO.RoutineInfo;
 import com.bin.user.pojo.PO.TypeInfo;
+import com.bin.user.pojo.VO.RoutineInfoVO;
+import com.bin.user.pojo.VO.RoutineItemVO;
 import com.bin.user.pojo.VO.TypeInfoVO;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -37,11 +39,18 @@ public interface OutcomeInfoDao extends BaseMapper<OutcomeInfo> {
                                 @Param("outcome")Float outcome,
                                 @Param("date")Date date);
     Integer deleteOutcomeRecord(@Param("outcomeId")Long outcomeId);
+    String getTypeIcon(@Param("typeId")Long typeId);
+    String getTypeName(@Param("typeId")Long typeId);
     @Options(useGeneratedKeys = true, keyProperty = "routine.routineId", keyColumn = "routine_info.routine_id")
     @Insert("insert into routine_info(routine_name,routine_icon,user_id) values (#{routine.routineName},#{routine.routineIcon},#{userId})")
     Integer addConsumeRoutine(@Param("routine")RoutineInfo routine, @Param("userId")Long userId);
     Integer addRoutineDetail(@Param("detailName")String detailName,
                              @Param("detailTypeId")Long detailTypeId,
+                             @Param("detailTypeName")String detailTypeName,
+                             @Param("detailTypeIcon")String detailTypeIcon,
                              @Param("detailCost")Float detailCost,
                              @Param("routineId")Long routineId);
+    List<RoutineInfoVO>getRoutineList(@Param("userId")Long userId);
+    RoutineInfoVO getRoutineInfo(@Param("routineId")Long routineId);
+    List<RoutineItemVO>getRoutineItem(@Param("routineId")Long routineId);
 }

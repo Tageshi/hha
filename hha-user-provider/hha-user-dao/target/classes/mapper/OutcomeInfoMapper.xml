@@ -34,4 +34,20 @@
                                                      where type_info.type_id=user_type.type_id
                                                        and user_type.user_id=#{userId}
     </select>
+    <select id="getRoutineList" resultType="com.bin.user.pojo.VO.RoutineInfoVO">
+        select routine_id,routine_name,routine_icon from routine_info where user_id=#{userId} and is_deleted=0
+    </select>
+    <select id="getTypeIcon" resultType="java.lang.String">
+        select type_icon from type_info where type_id=#{typeId} and is_deleted=0
+    </select>
+    <select id="getTypeName" resultType="java.lang.String">
+        select type_name from type_info where type_id=#{typeId} and is_deleted=0
+    </select>
+    <select id="getRoutineInfo" resultType="com.bin.user.pojo.VO.RoutineInfoVO">
+        select routine_id,routine_name,routine_icon from routine_info where routine_id=#{routineId} and is_deleted=0
+    </select>
+    <select id="getRoutineItem" resultType="com.bin.user.pojo.VO.RoutineItemVO">
+        select routine_detail_id,routine_detail_name,routine_detail_type_id,routine_detail_type_name,
+               routine_detail_type_icon,routine_detail_cost from routine_detail where routine_id=#{routineId}
+    </select>
 </mapper>

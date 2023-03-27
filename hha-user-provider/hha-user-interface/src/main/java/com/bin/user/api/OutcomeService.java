@@ -5,6 +5,8 @@ import com.bin.user.pojo.DTO.AddConsumeRoutineDTO;
 import com.bin.user.pojo.DTO.AddConsumeTypeDTO;
 import com.bin.user.pojo.DTO.AddOutcomeRecordDTO;
 import com.bin.user.pojo.PO.OutcomeInfo;
+import com.bin.user.pojo.VO.RoutineDetailVO;
+import com.bin.user.pojo.VO.RoutineInfoVO;
 import com.bin.user.pojo.VO.TypeInfoVO;
 
 import java.util.List;
@@ -21,4 +23,6 @@ public interface OutcomeService extends IService<OutcomeInfo> {
     public boolean updateOutcomeRecord(AddOutcomeRecordDTO addOutcomeRecordDTO,Long outcomeId);
     public boolean deleteOutcomeRecord(Long outcomeId);
     public boolean addConsumeRoutine(AddConsumeRoutineDTO addConsumeRoutineDTO,Long userId);
+    public List<RoutineInfoVO> getConsumeRoutineList(Long userId);
+    public RoutineDetailVO getConsumeRoutineDetail(Long routineId);
 }

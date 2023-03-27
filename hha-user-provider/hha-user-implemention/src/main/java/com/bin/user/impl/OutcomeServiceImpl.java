@@ -11,6 +11,8 @@ import com.bin.user.pojo.PO.OutcomeInfo;
 import com.bin.user.pojo.PO.RoutineDetail;
 import com.bin.user.pojo.PO.RoutineInfo;
 import com.bin.user.pojo.PO.TypeInfo;
+import com.bin.user.pojo.VO.RoutineDetailVO;
+import com.bin.user.pojo.VO.RoutineInfoVO;
 import com.bin.user.pojo.VO.TypeInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,6 +116,9 @@ public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo>
     public boolean addConsumeRoutine(AddConsumeRoutineDTO addConsumeRoutineDTO,Long userId) {
         //获取detail数组
         List<RoutineDetail> routineDetails = addConsumeRoutineDTO.getRoutineDetail();
+        //初始化消费类型名称和icon
+        String name = "";
+        String icon = "";
         //封装routine对象
         RoutineInfo routine = new RoutineInfo();
         routine.setRoutineName(addConsumeRoutineDTO.getRoutineName());
@@ -122,11 +127,40 @@ public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo>
         if(outcomeInfoDao.addConsumeRoutine(routine,userId)>0){
             //插入路线详情
             for (RoutineDetail rd:routineDetails) {
-                outcomeInfoDao.addRoutineDetail(rd.getDetailName(),rd.getDetailTypeId(),rd.getDetailCost(),routine.getRoutineId());
+                //获取消费类型名称和icon
+                icon = outcomeInfoDao.getTypeIcon(rd.getDetailTypeId());
+                name = outcomeInfoDao.getTypeName(rd.getDetailTypeId());
+                outcomeInfoDao.addRoutineDetail(rd.getDetailName(),rd.getDetailTypeId(),name,icon,rd.getDetailCost(),routine.getRoutineId());
             }
             return true;
         }
         return false;
+    }
+
+    /**
+     * @description: 查看固定消费路线列表
+     * @author: tageshi 
+     * @date: 2023/3/28 0:10
+     **/
+    @Override
+    public List<RoutineInfoVO> getConsumeRoutineList(Long userId) {
+        return outcomeInfoDao.getRoutineList(userId);
+    }
+
+    /**
+     * @description: 查看固定消费路线详情
+     * @author: tageshi
+     * @date: 2023/3/28 0:44
+     **/
+    @Override
+    public RoutineDetailVO getConsumeRoutineDetail(Long routineId) {
+        //封装routine对象
+        RoutineDetailVO routineDetailVO = new RoutineDetailVO();
+        RoutineInfoVO routine = outcomeInfoDao.getRoutineInfo(routineId);
+        routineDetailVO.setRoutineName(routine.getRoutineName());
+        routineDetailVO.setRoutineIcon(routine.getRoutineIcon());
+        routineDetailVO.setRoutineDetail(outcomeInfoDao.getRoutineItem(routineId));
+        return routineDetailVO;
     }
 
 }

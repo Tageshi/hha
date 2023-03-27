@@ -109,4 +109,19 @@ public class YoungsterController extends BaseController {
         }
         return ResponseResult.errorResult(SYSTEM_ERROR);
     }
+
+    /**
+     * @description: 查看固定消费路线列表
+     * @author: tageshi 
+     * @date: 2023/3/28 0:07
+     **/
+    @GetMapping("/getConsumeRoutineList")
+    public ResponseResult getConsumeRoutineList(){
+        return ResponseResult.okResult(outcomeService.getConsumeRoutineList(getUserId()));
+    }
+
+    @GetMapping("/getConsumeRoutineDetail")
+    public ResponseResult getConsumeRoutineDetail(@Validated Long routineId){
+        return ResponseResult.okResult(outcomeService.getConsumeRoutineDetail(routineId));
+    }
 }
