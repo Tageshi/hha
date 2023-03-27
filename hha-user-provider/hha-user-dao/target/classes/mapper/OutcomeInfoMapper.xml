@@ -4,7 +4,34 @@
 <mapper namespace="com.bin.user.dao.OutcomeInfoDao">
 
     <insert id="insertOutcomeRecord">
-        insert into outcome_info(outcome_name,user_id,outcome,type_id)
-        values (#{outcomeName},#{userId},#{outcome},#{typeId})
+        insert into outcome_info(outcome_name,user_id,outcome,type_id,date)
+        values (#{outcomeName},#{userId},#{outcome},#{typeId},#{date})
     </insert>
+    <insert id="insertUserType">
+        insert into user_type(user_id,type_id)values (#{userId},#{typeId})
+    </insert>
+    <insert id="addRoutineDetail">
+        insert into routine_detail(routine_detail_name,routine_detail_type_id,routine_detail_cost,routine_id)
+        values (#{detailName},#{detailTypeId},#{detailCost},#{routineId})
+    </insert>
+    <update id="updateOutcomeRecord">
+        update outcome_info set type_id=#{typeId},outcome_name=#{outcomeName},outcome=#{outcome},date=#{date} where outcome_id=#{outcomeId}
+    </update>
+    <delete id="deleteCascadeType">
+        delete from user_type where type_id=#{typeId};
+    </delete>
+    <delete id="deleteOneType">
+        delete from type_info where type_id=#{typeId};
+    </delete>
+    <delete id="deleteOutcomeRecord">
+        delete from outcome_info where outcome_id=#{outcomeId}
+    </delete>
+    <select id="getTypeList" resultType="com.bin.user.pojo.VO.TypeInfoVO">
+        select type_id,type_name,type_icon from type_info where type_id=2 and is_deleted=0
+    </select>
+    <select id="getDefinedTypeList" resultType="com.bin.user.pojo.VO.TypeInfoVO">
+        select type_info.type_id,type_name,type_icon from type_info,user_type
+                                                     where type_info.type_id=user_type.type_id
+                                                       and user_type.user_id=#{userId}
+    </select>
 </mapper>

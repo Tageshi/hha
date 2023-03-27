@@ -5,18 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author tageshi
- * @date 2023/3/16 17:22
+ * @date 2023/3/26 20:23
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddOutcomeRecordDTO implements Serializable {
-    private Long typeId;
-    private String outcomeName;
-    private float outcome;
-    private Date date;
+public class AddConsumeTypeDTO implements Serializable {
+    private String typeName;
+    private String typeIcon;
 }
