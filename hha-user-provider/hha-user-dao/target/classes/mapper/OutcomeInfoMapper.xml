@@ -17,6 +17,9 @@
     <update id="updateOutcomeRecord">
         update outcome_info set type_id=#{typeId},outcome_name=#{outcomeName},outcome=#{outcome},date=#{date} where outcome_id=#{outcomeId}
     </update>
+    <update id="updateConsumeRoutine">
+        update routine_info set routine_name=#{routineName},routine_icon=#{routineIcon} where routine_id=#{routineId}
+    </update>
     <delete id="deleteCascadeType">
         delete from user_type where type_id=#{typeId};
     </delete>
@@ -25,6 +28,12 @@
     </delete>
     <delete id="deleteOutcomeRecord">
         delete from outcome_info where outcome_id=#{outcomeId}
+    </delete>
+    <delete id="deleteRoutineDetail">
+        delete from routine_detail where routine_id=#{routineId}
+    </delete>
+    <delete id="deleteConsumeRoutine">
+        delete from routine_info where routine_id=#{routineId}
     </delete>
     <select id="getTypeList" resultType="com.bin.user.pojo.VO.TypeInfoVO">
         select type_id,type_name,type_icon from type_info where type_id=2 and is_deleted=0
@@ -49,5 +58,51 @@
     <select id="getRoutineItem" resultType="com.bin.user.pojo.VO.RoutineItemVO">
         select routine_detail_id,routine_detail_name,routine_detail_type_id,routine_detail_type_name,
                routine_detail_type_icon,routine_detail_cost from routine_detail where routine_id=#{routineId}
+    </select>
+    <select id="getConsumeSceneList" resultType="com.bin.user.pojo.PO.SceneInfo">
+        select scene_id,scene_name,scene_icon from scene_info where is_deleted=0
+    </select>
+    <select id="getConsumeSceneDetail" resultType="java.lang.String">
+        select scene_name from scene_detail where scene_id=#{sceneId}
+    </select>
+    <select id="getRecentOutcomes" resultType="com.bin.user.pojo.VO.OutcomeRecordVO">
+        select
+            oi.outcome_id,
+            oi.outcome_name,
+            oi.outcome,
+            oi.type_id,
+            ti.type_name,
+            ti.type_icon,
+            oi.date
+        from outcome_info oi,type_info ti
+        <where>
+            <if test="typeId!=null and typeId!=''">
+                and oi.type_id=#{typeId}
+            </if>
+            and oi.type_id=ti.type_id
+            and oi.date >= #{date}
+            and oi.user_id=#{userId}
+            and oi.is_deleted=0
+        </where>
+    </select>
+    <select id="getAllOutcomes" resultType="com.bin.user.pojo.VO.OutcomeRecordVO">
+        select
+        oi.outcome_id,
+        oi.outcome_name,
+        oi.outcome,
+        oi.type_id,
+        ti.type_name,
+        ti.type_icon,
+        oi.date
+        from outcome_info oi,type_info ti
+        <where>
+            <if test="typeId!=null and typeId!=''">
+                and oi.type_id=#{typeId}
+            </if>
+            and oi.type_id=ti.type_id
+            and oi.date >= #{startTime} and #{endTime}>=oi.date
+            and oi.user_id=#{userId}
+            and oi.is_deleted=0
+        </where>
     </select>
 </mapper>

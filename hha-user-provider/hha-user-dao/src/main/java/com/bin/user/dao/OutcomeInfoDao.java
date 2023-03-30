@@ -3,7 +3,9 @@ package com.bin.user.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bin.user.pojo.PO.OutcomeInfo;
 import com.bin.user.pojo.PO.RoutineInfo;
+import com.bin.user.pojo.PO.SceneInfo;
 import com.bin.user.pojo.PO.TypeInfo;
+import com.bin.user.pojo.VO.OutcomeRecordVO;
 import com.bin.user.pojo.VO.RoutineInfoVO;
 import com.bin.user.pojo.VO.RoutineItemVO;
 import com.bin.user.pojo.VO.TypeInfoVO;
@@ -53,4 +55,15 @@ public interface OutcomeInfoDao extends BaseMapper<OutcomeInfo> {
     List<RoutineInfoVO>getRoutineList(@Param("userId")Long userId);
     RoutineInfoVO getRoutineInfo(@Param("routineId")Long routineId);
     List<RoutineItemVO>getRoutineItem(@Param("routineId")Long routineId);
+    Integer updateConsumeRoutine(@Param("routineId")Long routineId,
+                                 @Param("routineName")String routineName,
+                                 @Param("routineIcon")String routineIcon);
+    Integer deleteRoutineDetail(@Param("routineId")Long routineId);
+    Integer deleteConsumeRoutine(@Param("routineId")Long routineId);
+    List<SceneInfo> getConsumeSceneList();
+    List<String> getConsumeSceneDetail(@Param("sceneId")Long sceneId);
+    List<OutcomeRecordVO> getRecentOutcomes(@Param("typeId")Long typeId,@Param("userId")Long userId,@Param("date")Date date);
+
+    List<OutcomeRecordVO> getAllOutcomes(@Param("startTime")Date startTime,@Param("endTime")Date endTime,
+                                         @Param("typeId")Long typeId,@Param("userId")Long userId);
 }

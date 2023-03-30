@@ -10,6 +10,7 @@
         <module name="hha-user-interface" />
         <module name="hha-user-entity" />
         <module name="hha-user-dao" />
+        <module name="quartz-provider" />
         <module name="hha-user-consumer" />
         <module name="hha-user-implemention" />
         <module name="hha-common-web" />
@@ -43,6 +44,7 @@
       <module name="hha-yongster-consumer" options="-parameters" />
       <module name="hha-yongster-interface" options="-parameters" />
       <module name="hha-yongster-provider" options="-parameters" />
+      <module name="quartz-provider" options="-parameters" />
     </option>
   </component>
 </project>

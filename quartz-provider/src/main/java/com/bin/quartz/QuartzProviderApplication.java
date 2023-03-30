@@ -1,19 +1,19 @@
-package com.bin.user;
+package com.bin.quartz;
 
-import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author tageshi
- * @date 2023/3/15 15:17
+ * @date 2023/3/28 20:20
  */
-@EnableDubbo
+@MapperScan("com.bin.quartz")
 @SpringBootApplication
 @EnableScheduling
-public class hhaUserConsumerApplication {
+public class QuartzProviderApplication {
     public static void main(String[] args) {
-        SpringApplication.run(hhaUserConsumerApplication.class, args);
+        SpringApplication.run(QuartzProviderApplication.class,args);
     }
 }

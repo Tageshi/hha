@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AddConsumeRoutineDTO implements Serializable {
+    private String period;
     private String routineName;
     private String routineIcon;
     private List<RoutineDetail> routineDetail;

@@ -21,6 +21,7 @@
     <file url="file://$PROJECT_DIR$/hha-yongster-consumer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hha-yongster-interface/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/hha-yongster-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/quartz-provider/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
