@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author tageshi
@@ -15,7 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AddRoutinedOutcomeDTO implements Serializable {
-    private String startTime;
-    private String endTime;
+    private Date startTime;
+    private Date endTime;
     private MyPeriod period;
 }

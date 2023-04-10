@@ -26,7 +26,6 @@ public interface OutcomeService extends IService<OutcomeInfo> {
     public RoutineDetailVO getConsumeRoutineDetail(Long routineId);
     public boolean updateConsumeRoutine(AddConsumeRoutineDTO addConsumeRoutineDTO,Long routineId,Long userId);
     public boolean deleteConsumeRoutine(Long routineId);
-    public boolean addRoutinedOutcome(AddRoutinedOutcomeDTO addRoutinedOutcomeDTO); //定时任务、还没写完
     public List<GetConsumeSceneVO> getConsumeSceneList();
     public GetConsumeSceneDetailVO getConsumeSceneDetail(Long sceneId);
     public List<OutcomeRecordVO> getRecentOutcomes(Long typeId,  Long userId);

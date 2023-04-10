@@ -15,5 +15,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class MyPeriod implements Serializable {
     Integer number;
-    String unit;
+    String unit; //周、月
 }

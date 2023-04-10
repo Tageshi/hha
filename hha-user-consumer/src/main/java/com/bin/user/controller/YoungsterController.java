@@ -15,13 +15,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import static com.bin.common.core.api.AppHttpCodeEnum.SUCCESS;
 import static com.bin.common.core.api.AppHttpCodeEnum.SYSTEM_ERROR;
+import static com.bin.common.core.utils.QuartzUtils.calculateCronExpression;
 
 /**
  * @author tageshi
@@ -45,6 +45,8 @@ public class YoungsterController extends BaseController {
     private UserInfoService userInfoService;
     @Reference
     private AlgorithmService algorithmService;
+    @Reference
+    private QuartzService quartzService;
 
     /**
      * @description:添加支出记录（记账）
@@ -198,9 +200,17 @@ public class YoungsterController extends BaseController {
      * @date: 2023/3/28 16:58
      **/
     @PostMapping("/addRoutinedOutcome")
-    public ResponseResult addRoutinedOutcome(@Validated @RequestBody AddRoutinedOutcomeDTO addRoutinedOutcomeDTO){
-        return ResponseResult.okResult(outcomeService.addRoutinedOutcome(addRoutinedOutcomeDTO));
+    public ResponseResult addRoutinedOutcome(@Validated @RequestParam Long routineId,
+                                             @Validated @RequestBody AddRoutinedOutcomeDTO addRoutinedOutcomeDTO) throws ParseException {
+        String cronExpression = calculateCronExpression(addRoutinedOutcomeDTO.getPeriod().getUnit(),
+                addRoutinedOutcomeDTO.getPeriod().getNumber());
+        String startTime = String.valueOf(addRoutinedOutcomeDTO.getStartTime());
+        String endTime = String.valueOf(addRoutinedOutcomeDTO.getEndTime());
+        return ResponseResult.okResult(quartzService.scheduleAddRoutinedOutcomeJob(cronExpression,
+                startTime, endTime,routineId,getUserId()));
     }
+
+
 
     /**
      * @description: 获取固定消费场景列表（系统提供）
@@ -261,7 +271,9 @@ public class YoungsterController extends BaseController {
     @PostMapping("/addFixedIncome")
     public ResponseResult addFixedIncome(@Validated @RequestBody AddIncomeRecordDTO addIncomeRecordDTO){
         //使用定时任务
-        return ResponseResult.okResult();
+        String cronExpression = calculateCronExpression("月",1);
+        return ResponseResult.okResult(quartzService.scheduleAddFixedIncomeJob(cronExpression,
+                addIncomeRecordDTO, getUserId()));
     }
 
     /**

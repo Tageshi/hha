@@ -211,17 +211,6 @@ public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo>
     }
 
     /**
-     * @description: 定时任务添加固定路线支出
-     * @author: tageshi
-     * @date: 2023/3/28 17:37
-     **/
-    @Override
-    public boolean addRoutinedOutcome(AddRoutinedOutcomeDTO addRoutinedOutcomeDTO) {
-        //定时任务，没写
-        return true;
-    }
-
-    /**
      * @description: 获取固定消费场景列表
      * @author: tageshi
      * @date: 2023/3/30 21:27
