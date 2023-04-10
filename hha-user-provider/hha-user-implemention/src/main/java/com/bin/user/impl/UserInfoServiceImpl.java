@@ -10,6 +10,7 @@ import com.bin.user.pojo.DTO.LoginByCodeDTO;
 import com.bin.user.pojo.DTO.LoginByPasswordDTO;
 import com.bin.user.pojo.DTO.RegisterDTO;
 import com.bin.user.pojo.PO.UserInfo;
+import com.bin.user.pojo.VO.GetFriendInfoVO;
 import com.bin.user.pojo.VO.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,5 +83,10 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoDao, UserInfo> impl
     @Override
     public String getAgeGroupByUserId(Long userId) {
         return userInfoDao.getAgeGroupByUserId(userId);
+    }
+
+    @Override
+    public GetFriendInfoVO getUserInfoById(Long userId) {
+        return userInfoDao.getFriendInfo(userId);
     }
 }

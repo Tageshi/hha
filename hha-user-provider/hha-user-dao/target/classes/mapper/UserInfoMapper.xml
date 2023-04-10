@@ -15,4 +15,13 @@
     <select id="getAgeGroupByUserId" resultType="java.lang.String">
         select age_group from user_info where user_id=#{userId}
     </select>
+    <select id="getUserNameByUserId" resultType="java.lang.String">
+        select username from user_info where user_id=#{userId}
+    </select>
+    <select id="getPhoneNumberByUserId" resultType="java.lang.String">
+        select phone_number from user_info where user_id=#{userId}
+    </select>
+    <select id="getFriendInfo" resultType="com.bin.user.pojo.VO.GetFriendInfoVO">
+        select user_id,phone_number,username,sex,head_img,age_group from user_info where user_id=#{userId}
+    </select>
 </mapper>

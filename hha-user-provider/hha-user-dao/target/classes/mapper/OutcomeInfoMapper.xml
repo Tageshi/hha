@@ -36,12 +36,12 @@
         delete from routine_info where routine_id=#{routineId}
     </delete>
     <select id="getTypeList" resultType="com.bin.user.pojo.VO.TypeInfoVO">
-        select type_id,type_name,type_icon from type_info where type_id=2 and is_deleted=0
+        select type_id,type_name,type_icon from type_info where type_id>=1 and 9>=type_id and is_deleted=0
     </select>
     <select id="getDefinedTypeList" resultType="com.bin.user.pojo.VO.TypeInfoVO">
-        select type_info.type_id,type_name,type_icon from type_info,user_type
-                                                     where type_info.type_id=user_type.type_id
-                                                       and user_type.user_id=#{userId}
+        select ti.type_id,ti.type_name,ti.type_icon from type_info ti,user_type ut
+                                                     where ti.type_id=ut.type_id
+                                                       and ut.user_id=#{userId}
     </select>
     <select id="getRoutineList" resultType="com.bin.user.pojo.VO.RoutineInfoVO">
         select routine_id,routine_name,routine_icon from routine_info where user_id=#{userId} and is_deleted=0
@@ -59,11 +59,16 @@
         select routine_detail_id,routine_detail_name,routine_detail_type_id,routine_detail_type_name,
                routine_detail_type_icon,routine_detail_cost from routine_detail where routine_id=#{routineId}
     </select>
-    <select id="getConsumeSceneList" resultType="com.bin.user.pojo.PO.SceneInfo">
+    <select id="getConsumeSceneList" resultType="com.bin.user.pojo.VO.GetConsumeSceneVO">
         select scene_id,scene_name,scene_icon from scene_info where is_deleted=0
     </select>
-    <select id="getConsumeSceneDetail" resultType="java.lang.String">
-        select scene_name from scene_detail where scene_id=#{sceneId}
+    <select id="getConsumeSceneDetail" resultType="com.bin.user.pojo.VO.SceneDetailVO">
+        select sd.scene_detail_id as detailId,
+               sd.scene_detail_name as detailName,
+               sd.type_id,
+               ti.type_name,
+               ti.type_icon
+        from scene_detail sd,type_info ti where sd.scene_id=#{sceneId} and sd.type_id=ti.type_id
     </select>
     <select id="getRecentOutcomes" resultType="com.bin.user.pojo.VO.OutcomeRecordVO">
         select
@@ -93,16 +98,58 @@
         oi.type_id,
         ti.type_name,
         ti.type_icon,
-        oi.date
+        DATE_FORMAT(oi.date, '%Y-%m-%d') as date
         from outcome_info oi,type_info ti
         <where>
             <if test="typeId!=null and typeId!=''">
                 and oi.type_id=#{typeId}
             </if>
+            <if test="startTime!=null">
+                and oi.date &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and #{endTime} &gt;= oi.date
+            </if>
             and oi.type_id=ti.type_id
-            and oi.date >= #{startTime} and #{endTime}>=oi.date
             and oi.user_id=#{userId}
             and oi.is_deleted=0
         </where>
+        order by oi.date desc
+    </select>
+
+
+
+
+    <select id="getMonthlyTotalCost" resultType="java.lang.Float">
+        select sum(outcome) as cost
+        from outcome_info
+        where user_id=#{userId}
+          and date &gt;= #{startTime, jdbcType=DATE}
+          and #{endTime, jdbcType=DATE} &gt;= date
+    </select>
+
+    <select id="getMonthlyCostDetail" resultType="com.bin.user.pojo.PO.CostDetail">
+        select sum(oi.outcome) as cost,oi.type_id,ti.type_name,ti.type_icon
+        from outcome_info oi,type_info ti
+        where ti.type_id = oi.type_id
+          and oi.user_id = #{userId}
+          and oi.date>=#{startTime}
+          and #{endTime}>=oi.date
+        group by oi.type_id, ti.type_name, ti.type_icon
+    </select>
+    <select id="getAnnuallyTotalCost" resultType="java.lang.Float">
+        select sum(outcome) as cost from outcome_info where user_id=#{userId} and date>=#{startTime} and #{endTime}>=date
+    </select>
+    <select id="getAnnuallyCostDetail" resultType="com.bin.user.pojo.PO.CostDetail">
+        select sum(oi.outcome) as cost,oi.type_id,ti.type_name,ti.type_icon
+        from outcome_info oi,type_info ti
+        where ti.type_id = oi.type_id
+          and oi.user_id = #{userId}
+          and oi.date>=#{startTime}
+          and #{endTime}>=oi.date
+        group by oi.type_id, ti.type_name, ti.type_icon
+    </select>
+    <select id="getSceneName" resultType="java.lang.String">
+        select scene_name from scene_info where scene_id=#{sceneId}
     </select>
 </mapper>

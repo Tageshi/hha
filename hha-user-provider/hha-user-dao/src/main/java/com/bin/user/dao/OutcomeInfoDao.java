@@ -1,14 +1,8 @@
 package com.bin.user.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bin.user.pojo.PO.OutcomeInfo;
-import com.bin.user.pojo.PO.RoutineInfo;
-import com.bin.user.pojo.PO.SceneInfo;
-import com.bin.user.pojo.PO.TypeInfo;
-import com.bin.user.pojo.VO.OutcomeRecordVO;
-import com.bin.user.pojo.VO.RoutineInfoVO;
-import com.bin.user.pojo.VO.RoutineItemVO;
-import com.bin.user.pojo.VO.TypeInfoVO;
+import com.bin.user.pojo.PO.*;
+import com.bin.user.pojo.VO.*;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -60,10 +54,16 @@ public interface OutcomeInfoDao extends BaseMapper<OutcomeInfo> {
                                  @Param("routineIcon")String routineIcon);
     Integer deleteRoutineDetail(@Param("routineId")Long routineId);
     Integer deleteConsumeRoutine(@Param("routineId")Long routineId);
-    List<SceneInfo> getConsumeSceneList();
-    List<String> getConsumeSceneDetail(@Param("sceneId")Long sceneId);
+    List<GetConsumeSceneVO> getConsumeSceneList();
+    String getSceneName(@Param("sceneId")Long sceneId);
+    List<SceneDetailVO> getConsumeSceneDetail(@Param("sceneId")Long sceneId);
     List<OutcomeRecordVO> getRecentOutcomes(@Param("typeId")Long typeId,@Param("userId")Long userId,@Param("date")Date date);
 
     List<OutcomeRecordVO> getAllOutcomes(@Param("startTime")Date startTime,@Param("endTime")Date endTime,
                                          @Param("typeId")Long typeId,@Param("userId")Long userId);
+    Float getMonthlyTotalCost(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("userId")Long userId);
+    List<CostDetail> getMonthlyCostDetail(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("userId")Long userId);
+    Float getAnnuallyTotalCost(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("userId")Long userId);
+    List<CostDetail> getAnnuallyCostDetail(@Param("startTime")Date startTime,@Param("endTime")Date endTime,@Param("userId")Long userId);
+
 }

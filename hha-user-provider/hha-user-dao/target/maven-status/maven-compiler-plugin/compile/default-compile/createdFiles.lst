@@ -1,0 +1,4 @@
+com\bin\user\dao\FamilyInfoDao.class
+com\bin\user\dao\IncomeInfoDao.class
+com\bin\user\dao\FriendshipDao.class
+com\bin\user\dao\LoanInfoDao.class

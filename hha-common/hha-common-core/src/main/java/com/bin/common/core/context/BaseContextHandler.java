@@ -12,7 +12,7 @@ import java.util.Map;
 public class BaseContextHandler {
     public static ThreadLocal<Map<String, Object>> threadLocal = new ThreadLocal<>();
     public static final String CONTEXT_KEY_USER_ID = "currentUserId";
-    public static final String CONTEXT_KEY_USER_NAME = "currentUserName";
+    public static final String CONTEXT_KEY_username = "currentUserName";
     public static void set(String key, Object value) {
         Map<String, Object> map = threadLocal.get();
         if (map == null) {
@@ -55,10 +55,10 @@ public class BaseContextHandler {
     }
 
     public static void setUserName(String userName) {
-        set(CONTEXT_KEY_USER_NAME, userName);
+        set(CONTEXT_KEY_username, userName);
     }
     public static String getUserName() {
-        Object value = get(CONTEXT_KEY_USER_NAME);
+        Object value = get(CONTEXT_KEY_username);
         return returnObjectValue(value);
     }
 }

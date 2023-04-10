@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bin.user.dao.IncomeInfoDao">
+
+    <insert id="insertIncomeRecord">
+        insert into income_info(income_name,user_id,income,type_id,date) values (#{incomeName},#{userId},#{income},#{typeId},#{date})
+    </insert>
+    <insert id="addIncomePlan">
+        insert into income_plan_info(income_plan_name,cost,type_id,date,user_id) values (#{incomePlanName},#{cost},#{typeId},#{date},#{userId})
+    </insert>
+    <update id="updateIncomeRecord">
+        update income_info
+        set type_id=#{typeId},income_name=#{incomeName},income=#{income},date=#{date} where income_id=#{incomeId}
+    </update>
+    <delete id="deleteIncomeRecord">
+        delete from income_info where income_id=#{incomeId}
+    </delete>
+    <delete id="deleteIncomePlan">
+        delete from income_plan_info where income_plan_id=#{incomePlanId}
+    </delete>
+    <select id="getIncomeList" resultType="com.bin.user.pojo.VO.IncomeRecordVO">
+        select
+        oi.income_id,
+        oi.income_name,
+        oi.income,
+        oi.type_id,
+        ti.type_name,
+        ti.type_icon,
+        DATE_FORMAT(oi.date, '%Y-%m-%d') as date
+        from income_info oi,type_info ti
+        <where>
+            <if test="typeId!=null and typeId!=''">
+                and oi.type_id=#{typeId}
+            </if>
+            <if test="startTime!=null">
+                and oi.date &gt;= #{startTime}
+            </if>
+            <if test="endTime!=null">
+                and #{endTime} &gt;= oi.date
+            </if>
+            and oi.type_id=ti.type_id
+            and oi.user_id=#{userId}
+            and oi.is_deleted=0
+        </where>
+    </select>
+
+
+    <select id="getIncomePlanList" resultType="com.bin.user.pojo.VO.IncomePlanVO">
+        SELECT
+        ipi.income_plan_id AS incomePlanId,
+        ipi.income_plan_name AS incomePlanName,
+        ipi.cost,
+        ipi.type_id,
+        ti.type_name,
+        ti.type_icon
+        FROM
+        income_plan_info ipi,
+        type_info ti
+        WHERE
+        ipi.user_id = #{userId}
+        AND ipi.type_id = ti.type_id
+        <if test="startTime != null">
+            AND ipi.date &gt;= #{startTime, jdbcType=DATE}
+        </if>
+        <if test="endTime != null">
+            AND ipi.date &lt;= #{endTime, jdbcType=DATE}
+        </if>
+    </select>
+
+
+
+</mapper>

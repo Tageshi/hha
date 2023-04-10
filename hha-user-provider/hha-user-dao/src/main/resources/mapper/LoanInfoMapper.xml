@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bin.user.dao.LoanInfoDao">
+
+    <insert id="addLoanRecord">
+        insert into loan_info(loan_name,user_id,loan_sum,monthly_payment,past_month,loan_duration,loan_deadline)
+        values (#{loanName},#{userId},#{loanSum},#{monthlyPayment},#{pastMonth},#{loanDuration},#{loanDeadline})
+    </insert>
+
+    <insert id="addFamilyLoanRecord">
+        insert into family_loan(family_id,loan_id) values (#{familyId},#{loanId})
+    </insert>
+    <delete id="deleteLoanRecord">
+        delete from loan_info where loan_id=#{loanId}
+    </delete>
+    <select id="getAllLoanRecordList" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where user_id=#{userId} and is_family_loan=0
+    </select>
+    <select id="getUnfinishedLoanRecordList" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where user_id=#{userId} and loan_duration>past_month and is_family_loan=0
+    </select>
+    <select id="getFinishedLoanRecordList" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where user_id=#{userId} and loan_duration=past_month and is_family_loan=0
+    </select>
+    <select id="getLoanDetail" resultType="com.bin.user.pojo.VO.LoanDetailVO">
+        select loan_name,loan_sum,monthly_payment,past_month,loan_duration,loan_deadline from loan_info where loan_id=#{loanId}
+    </select>
+    <select id="getLoanById" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where loan_id=#{loanId}
+    </select>
+    <select id="getUnfinishedLoanById" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where loan_id=#{loanId} and loan_duration>past_month
+    </select>
+    <select id="getFinishedLoanById" resultType="com.bin.user.pojo.VO.GetLoanRecordVO">
+        select loan_id,loan_name,past_month,loan_duration from loan_info where loan_id=#{loanId} and past_month=loan_duration
+    </select>
+    <select id="getFamilyLoanDetail" resultType="com.bin.user.pojo.VO.FamilyLoanDetailVO">
+        select li.loan_name,
+               li.loan_sum,
+               li.monthly_payment,
+               li.past_month,
+               li.loan_duration,
+               li.loan_deadline,
+               li.user_id,
+               ui.username,
+               ui.head_img
+        from loan_info li,user_info ui
+        where li.loan_id=#{loanId} and li.user_id=ui.user_id
+    </select>
+    <select id="getCreatorByLoanId" resultType="java.lang.Long">
+        select user_id from loan_info where loan_id=#{loanId}
+    </select>
+</mapper>

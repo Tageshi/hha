@@ -5,9 +5,12 @@ spring:
     name: hha-user-provider
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hha_db?characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/hha_db?characterEncoding=utf-8&serverTimezone=UTC&&useLegacyDatetimeCode=false
     username: root
     password: 444555666f
+  restTemplate:
+    readTimeout: 5000
+    connectTimeout: 5000
 
 mybatis-plus:
   configuration:
@@ -39,3 +42,7 @@ dubbo:
     name: hha-user-provider
   consumer:
     timeout: 600000
+  scan:
+    base-packages: com.xxx.impl,com.xxx.config
+
+

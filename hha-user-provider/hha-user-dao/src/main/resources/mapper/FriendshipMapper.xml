@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bin.user.dao.FriendshipDao">
+    <insert id="sendFriendRequest">
+        insert into request_info(friend_user_id,user_id) values (#{friendUserId},#{userId})
+    </insert>
+    <insert id="addNewFriend">
+        insert into friendship(user_id,friend_user_id) values (#{userId},#{friendUserId})
+    </insert>
+    <insert id="sendEncouragementToFriend">
+        insert into dialogue_info(dialogue_content,sender,receiver)values (#{dialogueContent},#{userId},#{friendUserId})
+    </insert>
+    <insert id="insertGroupMember">
+        insert into group_user(group_id,user_id) values (#{groupId},#{userId})
+    </insert>
+    <insert id="sendDialogueToGroup">
+        insert into group_dialogue_info(group_dialogue_content,group_dialogue_sender,group_id)values (#{dialogueContent},#{userId},#{groupId})
+    </insert>
+    <update id="updateFriendRequestStatus">
+        update request_info set is_accepted=1 where request_id=#{requestId}
+    </update>
+    <update id="updateGroupInfo">
+        UPDATE group_info
+        <set>
+            <if test="groupName != null">group_name = #{groupName},</if>
+            <if test="groupImg != null">group_img = #{groupImg},</if>
+        </set>
+        WHERE group_id = #{groupId}
+    </update>
+
+    <delete id="unfriend">
+        delete from friendship where friend_user_id=#{friendUserId} and user_id=#{userId}
+    </delete>
+    <delete id="deleteGroupUsers">
+        delete from group_user where group_id=#{groupId}
+    </delete>
+    <delete id="deleteGroup">
+        delete from group_info where group_id=#{groupId}
+    </delete>
+    <select id="getRequestList" resultType="com.bin.user.pojo.VO.GetRequestVO">
+        select ri.friend_user_id as userId,
+               ui.username,
+               ui.head_img,
+               ri.created_time
+        from user_info ui,request_info ri
+        where ri.friend_user_id = ui.user_id
+          and ri.user_id=#{userId}
+          and ri.is_accepted=#{isAccepted}
+    </select>
+    <select id="getFriendUserIdByRequestId" resultType="java.lang.Long">
+        select friend_user_id from request_info where request_id=#{requestId}
+    </select>
+    <select id="getFriendsList" resultType="com.bin.user.pojo.VO.GetFriendsListVO">
+        SELECT f.friend_user_id AS userId,
+               ui.username,
+               ui.head_img,
+               (SELECT di.dialogue_content
+                FROM dialogue_info di
+                WHERE (di.sender = #{userId} AND di.receiver = f.friend_user_id)
+                   OR (di.sender = f.friend_user_id AND di.receiver = #{userId})
+                ORDER BY di.created_time DESC
+                                   LIMIT 1) AS lastDialogue,
+       (SELECT DATE_FORMAT(di.created_time, '%Y-%m-%d')
+        FROM dialogue_info di
+        WHERE (di.sender = #{userId} AND di.receiver = f.friend_user_id)
+                OR (di.sender = f.friend_user_id AND di.receiver = #{userId})
+                ORDER BY di.created_time DESC
+                LIMIT 1) AS lastDialogueTime
+        FROM friendship f
+            INNER JOIN user_info ui ON f.friend_user_id = ui.user_id
+        WHERE f.user_id = #{userId}
+        ORDER BY lastDialogueTime DESC
+    </select>
+
+
+
+    <select id="getHistoryDialogues" resultType="com.bin.user.pojo.VO.GetHistoryDialoguesVO">
+        select di.sender as userId,
+               ui.username,
+               ui.head_img,
+               di.dialogue_content,
+               di.created_time
+        from dialogue_info di,user_info ui
+        where ((di.sender=#{userId} and di.receiver=#{friendUserId}) or (di.sender=#{friendUserId} and di.receiver=#{userId}))
+          and di.sender=ui.user_id
+        order by di.created_time desc
+    </select>
+    <select id="getGroupList" resultType="com.bin.user.pojo.VO.GetGroupListVO">
+        SELECT gi.group_id,
+               gi.group_name,
+               gi.group_img,
+               IFNULL(gdi.group_dialogue_content, '') as lastDialogue,
+               IFNULL(gdi.group_dialogue_sender, '') as lastDialogueSender,
+               IFNULL(ui.username, '') as lastDialogueSenderName,
+               IFNULL(ui.head_img, '') as lastDialogueSenderHeadImg,
+               IFNULL(DATE_FORMAT(gdi.created_time, '%Y-%m-%d'), '') as lastDialogueTime
+        FROM group_info gi
+                 INNER JOIN group_user gu ON gi.group_id = gu.group_id
+                 LEFT JOIN
+             (
+                 SELECT gdi.group_id, gdi.group_dialogue_content, gdi.group_dialogue_sender, gdi.created_time
+                 FROM group_dialogue_info gdi
+                          INNER JOIN
+                      (
+                          SELECT group_id, MAX(created_time) AS created_time
+                          FROM group_dialogue_info
+                          GROUP BY group_id
+                      ) latest ON gdi.group_id = latest.group_id AND gdi.created_time = latest.created_time
+             ) gdi ON gi.group_id = gdi.group_id
+                 LEFT JOIN user_info ui ON gdi.group_dialogue_sender = ui.user_id
+        WHERE gu.user_id = #{userId}
+        ORDER BY IFNULL(gdi.created_time, '1970-01-01') DESC
+    </select>
+
+    <select id="getGroupMemberUserIdByGroupId" resultType="java.lang.Long">
+        select user_id from group_user where group_id=#{groupId}
+    </select>
+    <select id="getGroupLeaderByGroupId" resultType="java.lang.Long">
+        select group_leader from group_info where group_id=#{groupId}
+    </select>
+    <select id="getGroupInfoById" resultType="com.bin.user.pojo.PO.GroupInfo">
+        select * from group_info where group_id=#{groupId}
+    </select>
+    <select id="getGroupHistoryDialogues" resultType="com.bin.user.pojo.VO.GetHistoryDialoguesVO">
+        select gdi.group_dialogue_sender as userId,
+               ui.username,
+               ui.head_img,
+               gdi.group_dialogue_content as dialogueContent,
+               gdi.created_time
+        from group_dialogue_info gdi,user_info ui
+        where gdi.group_id=#{groupId}
+          and gdi.group_dialogue_sender=ui.user_id
+        order by gdi.created_time desc
+    </select>
+    <select id="getGroupMembers" resultType="com.bin.user.pojo.VO.GroupMemberVO">
+        select gu.user_id,ui.username,ui.head_img
+        from group_user gu,user_info ui where gu.group_id=#{groupId} and gu.user_id=ui.user_id
+    </select>
+</mapper>

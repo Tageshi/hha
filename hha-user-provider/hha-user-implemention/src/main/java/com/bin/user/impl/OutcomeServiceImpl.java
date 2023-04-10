@@ -3,20 +3,23 @@ package com.bin.user.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bin.user.api.OutcomeService;
+import com.bin.user.dao.IncomeInfoDao;
 import com.bin.user.dao.OutcomeInfoDao;
 import com.bin.user.pojo.DTO.*;
 import com.bin.user.pojo.PO.*;
-import com.bin.user.pojo.VO.OutcomeRecordVO;
-import com.bin.user.pojo.VO.RoutineDetailVO;
-import com.bin.user.pojo.VO.RoutineInfoVO;
-import com.bin.user.pojo.VO.TypeInfoVO;
+import com.bin.user.pojo.VO.*;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 
 
 /**
@@ -28,6 +31,8 @@ import java.util.List;
 public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo> implements OutcomeService {
     @Autowired
     private OutcomeInfoDao outcomeInfoDao;
+    @Autowired
+    private IncomeInfoDao incomeInfoDao;
     /**
      * @description: 添加支出（记账）
      * @author: tageshi
@@ -222,13 +227,16 @@ public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo>
      * @date: 2023/3/30 21:27
      **/
     @Override
-    public List<SceneInfo> getConsumeSceneList() {
+    public List<GetConsumeSceneVO> getConsumeSceneList() {
         return outcomeInfoDao.getConsumeSceneList();
     }
 
     @Override
-    public List<String> getConsumeSceneDetail(Long sceneId) {
-        return outcomeInfoDao.getConsumeSceneDetail(sceneId);
+    public GetConsumeSceneDetailVO getConsumeSceneDetail(Long sceneId) {
+        GetConsumeSceneDetailVO getConsumeSceneDetailVO = new GetConsumeSceneDetailVO();
+        getConsumeSceneDetailVO.setSceneName(outcomeInfoDao.getSceneName(sceneId));
+        getConsumeSceneDetailVO.setDetails(outcomeInfoDao.getConsumeSceneDetail(sceneId));
+        return getConsumeSceneDetailVO;
     }
 
     /**
@@ -255,6 +263,155 @@ public class OutcomeServiceImpl extends ServiceImpl<OutcomeInfoDao, OutcomeInfo>
     @Override
     public List<OutcomeRecordVO> getAllOutcomes(Date startTime, Date endTime, Long typeId, Long userId) {
         return outcomeInfoDao.getAllOutcomes(startTime,endTime,typeId,userId);
+    }
+
+    /**
+     * @description: 计算月度账单数据
+     * @author: tageshi
+     * @date: 2023/4/1 22:41
+     **/
+    @Override
+    public MonthlyExpensesVO getMonthlyExpenses(Date startTime,Date endTime,Long userId) {
+        MonthlyExpensesVO monthlyExpensesVO = new MonthlyExpensesVO();
+        Float totalCost = outcomeInfoDao.getMonthlyTotalCost(startTime,endTime,userId);
+        List<CostDetail> costDetails = outcomeInfoDao.getMonthlyCostDetail(startTime,endTime,userId);
+        if(totalCost!=null){
+            monthlyExpensesVO.setTotalCost(totalCost);
+        }
+        monthlyExpensesVO.setCostDetail(costDetails);
+        return monthlyExpensesVO;
+    }
+
+    @Override
+    public AnnuallyExpensesVO getAnnuallyExpenses(Date startTime, Date endTime, Long userId) {
+        AnnuallyExpensesVO annuallyExpensesVO = new AnnuallyExpensesVO();
+        Float totalCost = outcomeInfoDao.getAnnuallyTotalCost(startTime,endTime,userId);
+        List<CostDetail> costDetails = outcomeInfoDao.getAnnuallyCostDetail(startTime,endTime,userId);
+        if(totalCost!=null){
+            annuallyExpensesVO.setTotalCost(totalCost);
+        }
+        annuallyExpensesVO.setCostDetail(costDetails);
+        return annuallyExpensesVO;
+    }
+
+    /**
+     * @description: 导入支付宝账单文件记账
+     * @author: tageshi
+     * @date: 2023/4/4 0:25
+     **/
+    @Override
+    public boolean addOutcomeRecordByAlipayExcel(MultipartFile file,Long userId) {
+
+        if (file.isEmpty()) {
+            return false;
+        }
+        try {
+            InputStream inputStream = file.getInputStream();
+            Workbook workbook = WorkbookFactory.create(inputStream);
+
+            // 获取第一个sheet
+            Sheet sheet = workbook.getSheetAt(0);
+            // 获取每个数据所在的列
+            int typeColumnIndex = 0; // 收/支在第1列
+            int descColumnIndex = 3; // 商品说明在第4列
+            int amountColumnIndex = 5; // 金额在第6列
+            int categoryColumnIndex = 7; // 交易分类在第8列
+            int timeColumnIndex = 10; // 交易时间在第11列
+
+            // 读取数据行，从第3行开始
+            for (int rowIndex = 2; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+                Row row = sheet.getRow(rowIndex);
+                if (row == null) {
+                    continue;
+                }
+                // 读取单元格数据
+                Cell typeCell = row.getCell(typeColumnIndex);
+                String type = typeCell == null ? "" : typeCell.toString(); //“收”或“支”
+                Cell descCell = row.getCell(descColumnIndex);
+                String desc = descCell == null ? "" : descCell.toString();
+                Cell amountCell = row.getCell(amountColumnIndex);
+                float amount = amountCell == null ? 0 : (float) amountCell.getNumericCellValue();
+                Cell categoryCell = row.getCell(categoryColumnIndex);
+                String category = categoryCell == null ? "" : categoryCell.toString();
+                Cell timeCell = row.getCell(timeColumnIndex);
+                Date date = timeCell == null ? null : timeCell.getDateCellValue();
+
+                Long typeId;
+                switch (category) {
+                    case "餐饮美食":
+                        typeId = (long)1;
+                        break;
+                    case "烟酒支出":
+                        typeId = (long)2;
+                        break;
+                    case "数码电器":
+                    case "交通出行":
+                    case "爱车养车":
+                        typeId = (long)3;
+                        break;
+                    case "运动户外":
+                        typeId = (long)4;
+                        break;
+                    case "服饰装扮":
+                    case "美容美发":
+                        typeId = (long)5;
+                        break;
+                    case "家居家装":
+                    case "住房物业":
+                    case "酒店民宿支出":
+                        typeId = (long)6;
+                        break;
+                    case "日用百货":
+                    case "生活服务":
+                    case "公共服务":
+                    case "商业服务":
+                    case "充值缴费":
+                        typeId = (long)7;
+                        break;
+                    case "医疗健康":
+                        typeId = (long)8;
+                        break;
+                    case "文化休闲'":
+                    case "教育培训":
+                    case "投资理财":
+                    case "保险":
+                        typeId = (long)9;
+                        break;
+                    default:
+                        typeId = (long)10;
+                        break;
+                }
+                if(type.equals("支出")){
+                    outcomeInfoDao.insertOutcomeRecord(typeId,desc,amount,date,userId);
+                }
+                else if(type.equals("收入")){
+                    incomeInfoDao.insertIncomeRecord(typeId,desc,amount,date,userId);
+                }
+            }
+            // 关闭工作簿
+            workbook.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * @description: 批量导入支出
+     * @author: tageshi
+     * @date: 2023/4/6 19:08
+     **/
+    @Override
+    public boolean addOutcomeRecordArray(List<AddOutcomeRecordDTO> addOutcomeRecordDTOs, Long userId) {
+        boolean flag = true;
+        for (AddOutcomeRecordDTO outcomeRecord:addOutcomeRecordDTOs) {
+            if(outcomeInfoDao.insertOutcomeRecord(outcomeRecord.getTypeId(),outcomeRecord.getOutcomeName(),outcomeRecord.getOutcome(),
+                    outcomeRecord.getDate(),userId)<=0){
+                flag = false;
+            }
+        }
+        return flag;
     }
 
 

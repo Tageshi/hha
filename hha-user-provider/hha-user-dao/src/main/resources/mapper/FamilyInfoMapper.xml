@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bin.user.dao.FamilyInfoDao">
+
+    <insert id="addFamilyMember">
+        insert into user_family(family_id,user_id) values (#{familyId},#{userId})
+    </insert>
+    <insert id="insertJointOutcomeRelated">
+        insert into joint_outcome_related(joint_outcome_id,outcome_id) values (#{jointOutcomeId},#{outcomeId})
+    </insert>
+    <update id="updateFamilyName">
+        update family_info set family_name=#{familyName} where family_id=#{familyId}
+    </update>
+    <delete id="deleteAllMembers">
+        delete from user_family where family_id=#{familyId}
+    </delete>
+    <delete id="deleteJointExpense">
+        delete from joint_outcome_info where joint_outcome_id=#{jointOutcomeId}
+    </delete>
+    <delete id="deleteJointRelated">
+        delete from joint_outcome_related where outcome_id=#{outcomeId}
+    </delete>
+    <select id="getFamilyMemberList" resultType="com.bin.user.pojo.VO.GetFamilyMemberVO">
+        select uf.user_id,ui.username,ui.head_img
+        from user_info ui,user_family uf
+        where uf.family_id=#{familyId}
+          and uf.user_id=ui.user_id
+    </select>
+    <select id="getFamilyIdByUserId" resultType="java.lang.Long">
+        select family_id from user_family where user_id=#{userId}
+    </select>
+    <select id="getFamilyInfoById" resultType="com.bin.user.pojo.PO.FamilyInfo">
+        select * from family_info where family_id=#{familyId}
+    </select>
+    <select id="getJointExpenseList" resultType="com.bin.user.pojo.VO.GetJointExpenseVO">
+        select
+        joi.joint_outcome_id,
+        joi.joint_outcome_name,
+        joi.joint_outcome,
+        joi.type_id,
+        ti.type_name,
+        ti.type_icon,
+        joi.date
+        from joint_outcome_info joi,type_info ti
+        <where>
+            <if test="typeId!=null and typeId!=''">
+                and joi.type_id=#{typeId}
+            </if>
+            <if test="startTime!=null">
+                and joi.date &gt;= #{startTime, jdbcType=TIMESTAMP}
+            </if>
+            <if test="endTime!=null">
+                and #{endTime, jdbcType=TIMESTAMP} &gt;= joi.date
+            </if>
+            and joi.type_id=ti.type_id
+            and joi.family_id=#{familyId}
+            and joi.is_deleted=0
+        </where>
+        order by joi.date desc
+    </select>
+
+    <select id="getOutcomeIdByJointOutcomeId" resultType="java.lang.Long">
+        select outcome_id from joint_outcome_related where joint_outcome_id=#{jointOutcomeId}
+    </select>
+    <select id="getTypeTotalCost" resultType="java.lang.Float">
+        select sum(oi.outcome)
+        from outcome_info oi,user_family uf
+        where uf.family_id=#{familyId}
+          and uf.user_id=oi.user_id
+          and oi.type_id=#{typeId}
+    </select>
+    <select id="getDefinedTypeTotalCost" resultType="java.lang.Float">
+        select sum(oi.outcome)
+        from outcome_info oi,user_family uf
+        where uf.family_id=#{familyId}
+          and uf.user_id=oi.user_id
+          and oi.type_id>10
+    </select>
+    <select id="getLoanIdByFamilyId" resultType="java.lang.Long">
+        select loan_id from family_loan where family_id=#{familyId}
+    </select>
+</mapper>

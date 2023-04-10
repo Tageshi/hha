@@ -6,6 +6,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.bin.common.core.api.AppHttpCodeEnum;
 import com.bin.common.core.api.ResponseResult;
 import com.bin.common.core.constants.SystemConstants;
+import com.bin.common.core.utils.QiNiuUtils;
 import com.bin.common.web.base.BaseController;
 import com.bin.user.api.CodeService;
 import com.bin.user.api.UserInfoService;
@@ -15,6 +16,9 @@ import com.bin.user.pojo.DTO.RegisterDTO;
 import com.bin.user.pojo.VO.UserInfoVO;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 /**
@@ -114,5 +118,10 @@ public class CommonController extends BaseController {
     public ResponseResult logout() {
         StpUtil.logout();
         return ResponseResult.okResult();
+    }
+
+    @GetMapping("/getQiNiuToken")
+    public ResponseResult getQiNiuToken(){
+        return ResponseResult.okResult(QiNiuUtils.getUploadToken());
     }
 }

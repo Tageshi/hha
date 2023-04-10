@@ -1,0 +1,4 @@
+com\bin\user\api\FamilyService.class
+com\bin\user\api\FriendshipService.class
+com\bin\user\api\IncomeService.class
+com\bin\user\api\LoanService.class
